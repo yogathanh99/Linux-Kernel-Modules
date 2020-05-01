@@ -1,10 +1,10 @@
 #include <linux/module.h> // Core header for loading LKMs
 #include <linux/random.h> // get_random_bytes
-#include <linux/init.h>   // Macros __init & __exit
-#include <linux/kernel.h> // Contain types, macros, functions 
+#include <linux/init.h>   // __init & __exit
+#include <linux/kernel.h> // Contain types, functions 
 #include <linux/types.h>  // dev_t (major & minor number)
 #include <linux/fs.h>     // Header for Linux file system support
-#include <linux/uaccess.h>// Required for the copy to user_space func
+#include <linux/uaccess.h>// Required for the copy_to_user funcition
 #include <linux/device.h>
 
 #define DEVICE_NAME "RandomNumberDevice" // Character device name
@@ -26,9 +26,9 @@ static int dev_release(struct inode*, struct file*);
 static ssize_t dev_read(struct file*, char*, size_t, loff_t*);
 
 static struct file_operations fops = {
-	.open = dev_open,
-	.release = dev_release,
-	.read = dev_read,
+	.open = device_open,
+	.release = device_release,
+	.read = device_read,
 };
 
 
@@ -81,18 +81,18 @@ static void __exit RandomNumber_Exit(void) {
 	printk(KERN_INFO "RandomNumber: Random number generator unregistered");
 }
 
-static int dev_open(struct inode *inodep, struct file *filep) {
+static int device_open(struct inode *inodep, struct file *filep) {
 	timesOfOpens++;
 	printk(KERN_INFO "RandomNumber: Device has been opened %d time(s)\n", timesOfOpens);
 	return 0;
 }
 
-static int dev_release(struct inode *inodep, struct file *filep) {
+static int device_release(struct inode *inodep, struct file *filep) {
 	printk(KERN_INFO "RandomNumber: Device successfully closed\n");
 	return 0;
 }
 
-static ssize_t dev_read(struct file *filep, char* usr_space, size_t len, loff_t* offset) {
+static ssize_t device_read(struct file *filep, char* usr_space, size_t len, loff_t* offset) {
 	int rand;
 	int error_cnt;
 	// get_random_bytes has the format (void *buffer, int nbytes) and return random number  into &buffer
@@ -109,6 +109,7 @@ static ssize_t dev_read(struct file *filep, char* usr_space, size_t len, loff_t*
 	else{
 		printk(KERN_INFO "RandomNumber: Failed to send random number to the user!\n");
 		return -EFAULT;
+
 	}
 }
 
