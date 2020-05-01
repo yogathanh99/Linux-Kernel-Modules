@@ -4,7 +4,7 @@
 #include <linux/kernel.h> // Contain types, functions 
 #include <linux/types.h>  // dev_t (major & minor number)
 #include <linux/fs.h>     // Header for Linux file system support
-#include <linux/uaccess.h>// Required for the copy_to_user funcition
+#include <linux/uaccess.h>// Required for the copy_to_user function
 #include <linux/device.h>
 
 #define DEVICE_NAME "RandomNumberDevice" // Character device name
